@@ -1,0 +1,133 @@
+.employee-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+
+  mat-card-header {
+    margin-bottom: 24px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 24px;
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
+
+  form {
+    .form-section {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e0e0e0;
+
+      &:last-of-type {
+        border-bottom: none;
+      }
+
+      h3 {
+        margin: 0 0 20px;
+        color: #424242;
+        font-size: 18px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .half-width {
+      flex: 1;
+    }
+
+    .phone-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+
+      .phone-number {
+        flex: 2;
+      }
+
+      .phone-type {
+        flex: 1;
+      }
+
+      button[mat-icon-button] {
+        margin-top: 8px;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e0e0e0;
+
+      button {
+        min-width: 120px;
+
+        ::ng-deep .mdc-button__label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        mat-spinner {
+          margin-right: 8px;
+
+          ::ng-deep circle {
+            stroke: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-form-container {
+    .form-row {
+      flex-direction: column;
+    }
+
+    .half-width {
+      width: 100%;
+    }
+
+    .phone-row {
+      flex-wrap: wrap;
+
+      .phone-number,
+      .phone-type {
+        flex: 1 1 100%;
+      }
+
+      button[mat-icon-button] {
+        width: 100%;
+      }
+    }
+  }
+}
+
