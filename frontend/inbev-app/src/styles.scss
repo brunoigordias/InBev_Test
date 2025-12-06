@@ -1,0 +1,43 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Importar tema do Angular Material
+@use '@angular/material' as mat;
+
+// Incluir os estilos core do Material
+@include mat.core();
+
+// Definir o tema principal usando M3 (Material Design 3)
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+    tertiary: mat.$cyan-palette,
+  )
+));
+
+// Aplicar o tema
+html {
+  @include mat.all-component-themes($theme);
+  
+  // Customizar cores dos botões warn (vermelho)
+  .mat-mdc-raised-button.mat-warn {
+    --mdc-protected-button-container-color: #f44336;
+    --mdc-protected-button-label-text-color: white;
+  }
+  
+  // Customizar cores dos botões accent (rosa/pink)
+  .mat-mdc-raised-button.mat-accent {
+    --mdc-protected-button-container-color: #e91e63;
+    --mdc-protected-button-label-text-color: white;
+  }
+}
+
+// Estilos globais
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
