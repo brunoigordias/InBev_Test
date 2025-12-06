@@ -110,6 +110,20 @@ Acesse a documentação Swagger em: `http://localhost:5000/swagger`
 
 A API utiliza **JWT (JSON Web Token)** para autenticação.
 
+### Usuário Administrador Padrão
+
+Ao inicializar a aplicação pela primeira vez, um **usuário administrador padrão** é criado automaticamente:
+
+```
+Email: admin@inbev.com
+Senha: Admin@123
+Role: Director
+```
+
+> ⚠️ **IMPORTANTE**: Por questões de segurança, altere a senha padrão após o primeiro login em ambiente de produção.
+
+### Como autenticar
+
 1. Faça login em `/api/auth/login`
 2. Copie o token retornado
 3. No Swagger, clique em "Authorize" e cole o token: `Bearer {seu-token}`
