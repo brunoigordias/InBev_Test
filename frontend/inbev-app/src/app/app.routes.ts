@@ -23,9 +23,27 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'employees',
+    path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('./app').then(m => m.App), // Temporário - substituir depois
+    loadComponent: () => import('./shared/layouts/main-layout/main-layout').then(m => m.MainLayout),
+    children: [
+      {
+        path: 'employees',
+        loadComponent: () => import('./features/employees/employee-list/employee-list').then(m => m.EmployeeList)
+      },
+      {
+        path: 'employees/new',
+        loadComponent: () => import('./features/employees/employee-form/employee-form').then(m => m.EmployeeForm)
+      },
+      {
+        path: 'employees/:id',
+        loadComponent: () => import('./features/employees/employee-form/employee-form').then(m => m.EmployeeForm)
+      },
+      {
+        path: 'employees/:id/edit',
+        loadComponent: () => import('./features/employees/employee-form/employee-form').then(m => m.EmployeeForm)
+      }
+    ]
   },
   {
     path: '**',
