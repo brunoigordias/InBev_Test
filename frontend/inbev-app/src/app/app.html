@@ -1,0 +1,32 @@
+<mat-toolbar color="primary">
+  <mat-icon>business</mat-icon>
+  <span class="toolbar-spacer">{{ title() }}</span>
+  <button mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="container">
+  <div class="content">
+    <mat-icon class="success-icon">check_circle</mat-icon>
+    <h1>Angular Material configurado com sucesso! ✅</h1>
+    <p>O frontend está pronto para desenvolvimento.</p>
+    
+    <div class="button-group">
+      <button mat-raised-button color="primary">
+        <mat-icon>person_add</mat-icon>
+        Botão Primary
+      </button>
+      <button mat-raised-button color="accent">
+        <mat-icon>edit</mat-icon>
+        Botão Accent
+      </button>
+      <button mat-raised-button color="warn">
+        <mat-icon>delete</mat-icon>
+        Botão Warn
+      </button>
+    </div>
+  </div>
+  
+  <router-outlet></router-outlet>
+</div>
