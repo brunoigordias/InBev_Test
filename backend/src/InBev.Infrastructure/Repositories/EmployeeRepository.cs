@@ -48,6 +48,39 @@ public class EmployeeRepository : IEmployeeRepository
             .ToListAsync();
     }
 
+    public async Task<(IEnumerable<Employee> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, string? searchTerm = null)
+    {
+        var query = _context.Employees
+            .Include(e => e.PhoneNumbers)
+            .Include(e => e.Manager)
+            .Where(e => e.IsActive);
+
+        // Aplicar filtro de busca se fornecido
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var search = searchTerm.Trim().ToLower();
+            query = query.Where(e =>
+                e.FirstName.ToLower().Contains(search) ||
+                e.LastName.ToLower().Contains(search) ||
+                e.Email.ToLower().Contains(search) ||
+                e.DocNumber.Contains(search)
+            );
+        }
+
+        // Obter contagem total
+        var totalCount = await query.CountAsync();
+
+        // Aplicar paginação
+        var items = await query
+            .OrderBy(e => e.FirstName)
+            .ThenBy(e => e.LastName)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
     public async Task<IEnumerable<Employee>> GetByManagerIdAsync(Guid managerId)
     {
         return await _context.Employees
