@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Employee, CreateEmployee, UpdateEmployee } from '../../models';
+import { PagedResponse } from '../../models/paged-response.model';
 
 /**
  * Serviço para gerenciamento de funcionários
@@ -14,10 +15,27 @@ export class EmployeeService {
   private readonly endpoint = 'employees';
 
   /**
-   * Busca todos os funcionários
+   * Busca todos os funcionários (sem paginação - deprecated)
+   * @deprecated Use getPaged() instead
    */
   getAll(): Observable<Employee[]> {
     return this.apiService.get<Employee[]>(this.endpoint);
+  }
+
+  /**
+   * Busca funcionários com paginação e busca
+   */
+  getPaged(pageNumber: number = 1, pageSize: number = 10, searchTerm?: string): Observable<PagedResponse<Employee>> {
+    const params: any = {
+      pageNumber: pageNumber.toString(),
+      pageSize: pageSize.toString()
+    };
+
+    if (searchTerm && searchTerm.trim()) {
+      params.searchTerm = searchTerm.trim();
+    }
+
+    return this.apiService.get<PagedResponse<Employee>>(this.endpoint, params);
   }
 
   /**
