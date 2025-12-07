@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -7,11 +7,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { debounceTime, Subject } from 'rxjs';
 
 import { EmployeeService } from '../../../core/services/employee.service';
 import { Employee, EmployeeRole, EmployeeRoleLabels } from '../../../models';
 import { CpfPipe } from '../../../shared/pipes/cpf-pipe';
+import { PagedResponse } from '../../../models/paged-response.model';
 
 @Component({
   selector: 'app-employee-list',
@@ -23,8 +29,12 @@ import { CpfPipe } from '../../../shared/pipes/cpf-pipe';
     MatSnackBarModule,
     MatCardModule,
     MatChipsModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
     DatePipe,
-    CpfPipe
+    CpfPipe,
+    FormsModule
   ],
   templateUrl: './employee-list.html',
   styleUrl: './employee-list.scss',
@@ -33,20 +43,46 @@ export class EmployeeList implements OnInit {
   private readonly employeeService = inject(EmployeeService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private searchSubject = new Subject<string>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   employees = signal<Employee[]>([]);
   isLoading = signal(true);
   displayedColumns: string[] = ['firstName', 'email', 'role', 'birthDate', 'actions'];
+  
+  // Paginação
+  totalCount = signal(0);
+  pageSize = signal(10);
+  pageNumber = signal(1);
+  pageSizeOptions = [5, 10, 25, 50, 100];
+  
+  // Busca
+  searchTerm = '';
 
   ngOnInit(): void {
     this.loadEmployees();
+    
+    // Configurar debounce para busca
+    this.searchSubject.pipe(
+      debounceTime(500)
+    ).subscribe(() => {
+      this.pageNumber.set(1);
+      this.loadEmployees();
+    });
   }
 
   loadEmployees(): void {
     this.isLoading.set(true);
-    this.employeeService.getAll().subscribe({
-      next: (employees) => {
-        this.employees.set(employees);
+    
+    this.employeeService.getPaged(
+      this.pageNumber(),
+      this.pageSize(),
+      this.searchTerm
+    ).subscribe({
+      next: (response: PagedResponse<Employee>) => {
+        this.employees.set(response.items);
+        this.totalCount.set(response.totalCount);
         this.isLoading.set(false);
       },
       error: (error) => {
@@ -58,6 +94,23 @@ export class EmployeeList implements OnInit {
         );
       }
     });
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.pageSize.set(event.pageSize);
+    this.pageNumber.set(event.pageIndex + 1);
+    this.loadEmployees();
+  }
+
+  onSearchChange(value: string): void {
+    this.searchTerm = value;
+    this.searchSubject.next(value);
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.pageNumber.set(1);
+    this.loadEmployees();
   }
 
   getRoleLabel(role: EmployeeRole): string {

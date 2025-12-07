@@ -14,6 +14,24 @@
     </mat-card-header>
 
     <mat-card-content>
+      <!-- Campo de Busca -->
+      <div class="search-container">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar funcionário</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange($event)"
+            placeholder="Nome, e-mail ou CPF">
+          <mat-icon matPrefix>search</mat-icon>
+          @if (searchTerm) {
+            <button matSuffix mat-icon-button (click)="clearSearch()" matTooltip="Limpar busca">
+              <mat-icon>clear</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+
       @if (isLoading()) {
         <div class="loading-container">
           <mat-spinner></mat-spinner>
@@ -22,8 +40,17 @@
       } @else if (employees().length === 0) {
         <div class="empty-state">
           <mat-icon>people_outline</mat-icon>
-          <h3>Nenhum funcionário cadastrado</h3>
-          <p>Clique no botão acima para cadastrar o primeiro funcionário.</p>
+          @if (searchTerm) {
+            <h3>Nenhum resultado encontrado</h3>
+            <p>Tente ajustar sua busca ou limpe o filtro.</p>
+            <button mat-raised-button color="primary" (click)="clearSearch()">
+              <mat-icon>clear</mat-icon>
+              Limpar Busca
+            </button>
+          } @else {
+            <h3>Nenhum funcionário cadastrado</h3>
+            <p>Clique no botão acima para cadastrar o primeiro funcionário.</p>
+          }
         </div>
       } @else {
         <div class="table-container">
@@ -79,6 +106,17 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
+
+          <!-- Paginador -->
+          <mat-paginator
+            [length]="totalCount()"
+            [pageSize]="pageSize()"
+            [pageSizeOptions]="pageSizeOptions"
+            [pageIndex]="pageNumber() - 1"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+            aria-label="Selecione a página de funcionários">
+          </mat-paginator>
         </div>
       }
     </mat-card-content>

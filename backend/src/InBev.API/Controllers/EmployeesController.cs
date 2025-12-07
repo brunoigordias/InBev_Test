@@ -28,13 +28,21 @@ public class EmployeesController : ControllerBase
     }
 
     /// <summary>
-    /// Retorna todos os funcionários
+    /// Retorna todos os funcionários com paginação e busca
     /// </summary>
+    /// <param name="pageNumber">Número da página (padrão: 1)</param>
+    /// <param name="pageSize">Quantidade de itens por página (padrão: 10, máximo: 100)</param>
+    /// <param name="searchTerm">Termo de busca para filtrar por nome, email ou CPF</param>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<EmployeeDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(PagedResponse<EmployeeDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? searchTerm = null)
     {
-        var employees = await _employeeRepository.GetAllAsync();
+        // Validar parâmetros
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        var (employees, totalCount) = await _employeeRepository.GetPagedAsync(pageNumber, pageSize, searchTerm);
 
         var employeeDtos = employees.Select(e => new EmployeeDto
         {
@@ -53,9 +61,11 @@ public class EmployeesController : ControllerBase
                 Number = p.Number,
                 Type = p.Type
             }).ToList()
-        });
+        }).ToList();
 
-        return Ok(employeeDtos);
+        var response = new PagedResponse<EmployeeDto>(employeeDtos, totalCount, pageNumber, pageSize);
+
+        return Ok(response);
     }
 
     /// <summary>
