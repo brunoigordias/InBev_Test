@@ -12,6 +12,7 @@ public interface IEmployeeRepository
     Task<IEnumerable<Employee>> GetByManagerIdAsync(Guid managerId);
     Task<Employee> AddAsync(Employee employee);
     Task UpdateAsync(Employee employee);
+    Task UpdatePasswordAsync(Guid employeeId, string passwordHash);
     Task DeleteAsync(Guid id);
     Task<bool> ExistsAsync(Guid id);
 }

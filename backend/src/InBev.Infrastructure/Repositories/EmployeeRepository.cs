@@ -130,6 +130,17 @@ public class EmployeeRepository : IEmployeeRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdatePasswordAsync(Guid employeeId, string passwordHash)
+    {
+        var employee = await _context.Employees.FindAsync(employeeId);
+        if (employee != null)
+        {
+            employee.PasswordHash = passwordHash;
+            employee.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task DeleteAsync(Guid id)
     {
         var employee = await _context.Employees.FindAsync(id);
