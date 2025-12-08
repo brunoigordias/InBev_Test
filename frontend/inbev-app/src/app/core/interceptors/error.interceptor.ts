@@ -22,9 +22,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         // Erro do lado do servidor
         switch (error.status) {
           case 401:
-            // Não autorizado - fazer logout
-            errorMessage = 'Sessão expirada. Faça login novamente.';
-            authService.logout();
+            // Não autorizado
+            // Se já existe um token, significa que a sessão expirou
+            if (authService.getToken()) {
+              errorMessage = 'Sessão expirada. Faça login novamente.';
+              authService.logout();
+            } else {
+              // Se não há token, usar a mensagem do backend (ex: senha incorreta)
+              errorMessage = error.error?.message || 'Credenciais inválidas';
+            }
             break;
           case 403:
             errorMessage = 'Você não tem permissão para acessar este recurso.';
