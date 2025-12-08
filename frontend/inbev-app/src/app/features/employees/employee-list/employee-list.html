@@ -98,9 +98,11 @@
                   <button mat-icon-button color="accent" (click)="editEmployee(employee.id)" matTooltip="Editar">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" (click)="deleteEmployee(employee)" matTooltip="Excluir">
-                    <mat-icon>delete</mat-icon>
-                  </button>
+                  @if (employee.id !== currentUserId()) {
+                    <button mat-icon-button color="warn" (click)="deleteEmployee(employee)" matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  }
                 }
               </td>
             </ng-container>
