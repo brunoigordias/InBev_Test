@@ -1,0 +1,214 @@
+## InBev Test - GitIgnore
+## Projeto Fullstack (.NET + Angular)
+
+#######################
+# .NET / C# / Backend #
+#######################
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## User-specific files
+*.rsuser
+
+## Test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+## Coverage reports
+coverage/
+*.coverage
+*.coveragexml
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+## Rider
+.idea/
+*.sln.iml
+
+## JetBrains
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+## Database
+*.db
+*.sqlite
+*.sqlite3
+
+## Logs
+logs/
+*.log
+
+## Publish profiles
+PublishProfiles/
+*.pubxml
+*.publishproj
+
+## Azure
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+## Docker
+docker-compose.override.yml
+
+#######################
+# Angular / Frontend  #
+#######################
+
+## Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+## Build outputs
+dist/
+dist-ssr/
+tmp/
+out-tsc/
+.angular/
+.cache/
+
+## Compiled output
+/tmp
+/out-tsc
+/bazel-out
+
+## IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+## System Files
+.DS_Store
+Thumbs.db
+
+## E2E testing
+e2e/*.js
+e2e/*.map
+
+## Test coverage
+/coverage
+.nyc_output
+
+## Storybook
+storybook-static/
+
+#######################
+# Geral / Comum       #
+#######################
+
+## Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+## OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+## Archives
+*.zip
+*.tar.gz
+*.rar
+
+## Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+## Certificates
+*.pfx
+*.p12
+*.key
+*.pem
+*.crt
+
+## Secrets & Sensitive Data
+secrets.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
+## Git
+*.orig
+
+## Docker volumes
+docker-volumes/
+data/
+
+## Backups
+*.bak
+*.backup
+
+#######################
+# Project Specific    #
+#######################
+
+## SQL Server Docker data
+sqlserver-data/
+
+## Application logs
+backend/src/InBev.API/logs/*.txt
+backend/logs/
+
+## Local development
+local.settings.json
+.vscode/settings.json
+
+## Migration backups
+**/Migrations/backup/
+
