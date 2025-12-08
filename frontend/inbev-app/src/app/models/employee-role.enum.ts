@@ -3,8 +3,7 @@
  */
 export enum EmployeeRole {
   Employee = 1,
-  Leader = 2,
-  Director = 3
+  Manager = 2
 }
 
 /**
@@ -12,7 +11,6 @@ export enum EmployeeRole {
  */
 export const EmployeeRoleLabels: Record<EmployeeRole, string> = {
   [EmployeeRole.Employee]: 'Funcionário',
-  [EmployeeRole.Leader]: 'Líder',
-  [EmployeeRole.Director]: 'Diretor'
+  [EmployeeRole.Manager]: 'Gerente'
 };
 

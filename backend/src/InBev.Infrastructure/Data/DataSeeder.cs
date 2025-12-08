@@ -46,7 +46,7 @@ public class DataSeeder
                     DocNumber = "12345678909", // CPF válido de exemplo
                     PasswordHash = _passwordHasher.HashPassword("Admin@123"),
                     BirthDate = new DateTime(1980, 1, 1),
-                    Role = EmployeeRole.Director,
+                    Role = EmployeeRole.Manager,
                     ManagerId = null,
                     CreatedAt = DateTime.UtcNow,
                     IsActive = true,

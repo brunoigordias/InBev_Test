@@ -40,6 +40,17 @@ public class CreateEmployeeValidator : AbstractValidator<CreateEmployeeDto>
         RuleFor(x => x.Role)
             .IsInEnum().WithMessage("Função inválida");
 
+        // Validação de ManagerId baseado no Role
+        RuleFor(x => x.ManagerId)
+            .Null()
+            .When(x => x.Role == EmployeeRole.Manager)
+            .WithMessage("Gerentes não podem ter gerente");
+
+        RuleFor(x => x.ManagerId)
+            .NotNull()
+            .When(x => x.Role == EmployeeRole.Employee)
+            .WithMessage("Funcionários devem ter um gerente");
+
         RuleFor(x => x.PhoneNumbers)
             .NotEmpty().WithMessage("Deve haver pelo menos um telefone")
             .Must(x => x.Count > 0).WithMessage("Deve haver pelo menos um telefone");

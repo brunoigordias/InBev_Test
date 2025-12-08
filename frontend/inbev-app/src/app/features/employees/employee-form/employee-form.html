@@ -35,7 +35,7 @@
           <div class="form-row">
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>CPF</mat-label>
-              <input matInput formControlName="docNumber" placeholder="12345678900" maxlength="11">
+              <input matInput formControlName="docNumber" placeholder="12345678900" maxlength="11" [readonly]="isEditMode()">
               <mat-icon matPrefix>badge</mat-icon>
               @if (employeeForm.get('docNumber')?.invalid && employeeForm.get('docNumber')?.touched) {
                 <mat-error>CPF deve ter 11 dígitos</mat-error>
@@ -48,7 +48,11 @@
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
               @if (employeeForm.get('birthDate')?.invalid && employeeForm.get('birthDate')?.touched) {
-                <mat-error>Data de nascimento é obrigatória</mat-error>
+                @if (employeeForm.get('birthDate')?.hasError('required')) {
+                  <mat-error>Data de nascimento é obrigatória</mat-error>
+                } @else if (employeeForm.get('birthDate')?.hasError('minAge')) {
+                  <mat-error>Funcionário deve ter pelo menos 18 anos</mat-error>
+                }
               }
             </mat-form-field>
           </div>
@@ -59,7 +63,7 @@
           <h3>Dados de Acesso</h3>
           
           <div class="form-row">
-            <mat-form-field appearance="outline" class="half-width">
+            <mat-form-field appearance="outline" [class]="isEditMode() ? 'full-width' : 'half-width'">
               <mat-label>E-mail</mat-label>
               <input matInput type="email" formControlName="email" placeholder="email@exemplo.com">
               <mat-icon matPrefix>email</mat-icon>
@@ -68,24 +72,41 @@
               }
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="half-width">
-              <mat-label>Senha</mat-label>
-              <input matInput type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
-              <mat-icon matPrefix>lock</mat-icon>
-              @if (employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched) {
-                <mat-error>Senha deve ter no mínimo 6 caracteres</mat-error>
-              }
-            </mat-form-field>
+            @if (!isEditMode()) {
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Senha</mat-label>
+                <input matInput type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+                <mat-icon matPrefix>lock</mat-icon>
+                @if (employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched) {
+                  <mat-error>Senha deve ter no mínimo 6 caracteres</mat-error>
+                }
+              </mat-form-field>
+            }
           </div>
 
           <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Cargo</mat-label>
-            <mat-select formControlName="role">
-              @for (role of roles; track role) {
-                <mat-option [value]="role">{{ roleLabels[role] }}</mat-option>
+            <mat-label>Gerente</mat-label>
+            <mat-select formControlName="managerId">
+              @if (isManager()) {
+                <mat-option [value]="null">Nenhum (este usuário será um Gerente)</mat-option>
+              }
+              @for (manager of managers(); track manager.id) {
+                @if (manager.role === 2) {
+                  <mat-option [value]="manager.id">
+                    {{ manager.firstName }} {{ manager.lastName }}
+                  </mat-option>
+                }
               }
             </mat-select>
-            <mat-icon matPrefix>work</mat-icon>
+            <mat-icon matPrefix>supervisor_account</mat-icon>
+            @if (isManager()) {
+              <mat-hint>Se não tiver gerente, o funcionário será automaticamente um Gerente</mat-hint>
+            } @else {
+              <mat-hint>Selecione um gerente (obrigatório)</mat-hint>
+            }
+            @if (employeeForm.get('managerId')?.invalid && employeeForm.get('managerId')?.touched) {
+              <mat-error>Gerente é obrigatório</mat-error>
+            }
           </mat-form-field>
         </div>
 
@@ -98,8 +119,8 @@
             </button>
           </h3>
 
-          @for (phone of phoneNumbers.controls; track phone; let i = $index) {
-            <div class="phone-row" [formGroupName]="i" formArrayName="phoneNumbers">
+          @for (phone of phoneNumbersControls; track phone; let i = $index) {
+            <div class="phone-row" [formGroup]="phone">
               <mat-form-field appearance="outline" class="phone-number">
                 <mat-label>Número</mat-label>
                 <input matInput formControlName="number" placeholder="11999999999" maxlength="11">

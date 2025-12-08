@@ -125,12 +125,18 @@ public class EmployeesController : ControllerBase
 
         var currentRole = Enum.Parse<EmployeeRole>(currentUserRole);
 
-        // Regra: Não pode criar usuário com permissões maiores que a sua
-        if (dto.Role > currentRole)
+        // Regra: Apenas Gerentes podem criar outros Gerentes
+        if (dto.Role == EmployeeRole.Manager && currentRole != EmployeeRole.Manager)
         {
-            _logger.LogWarning("Tentativa de criar funcionário com permissão maior. Usuário atual: {CurrentRole}, Tentativa: {NewRole}", 
-                currentRole, dto.Role);
-            return Forbid("Você não pode criar um usuário com permissões maiores que a sua");
+            _logger.LogWarning("Tentativa de criar gerente sem permissão. Usuário atual: {CurrentRole}", currentRole);
+            return Forbid("Apenas gerentes podem criar outros gerentes");
+        }
+
+        // Regra: Funcionários não-gerentes devem obrigatoriamente ter um gerente
+        if (currentRole != EmployeeRole.Manager && !dto.ManagerId.HasValue)
+        {
+            _logger.LogWarning("Tentativa de criar funcionário sem gerente. Usuário atual: {CurrentRole}", currentRole);
+            return BadRequest(new { message = "Funcionários devem ter um gerente atribuído" });
         }
 
         // Verificar se email já existe
@@ -235,15 +241,22 @@ public class EmployeesController : ControllerBase
         employee.BirthDate = dto.BirthDate;
         employee.ManagerId = dto.ManagerId;
 
-        // Atualizar telefones
-        employee.PhoneNumbers.Clear();
-        employee.PhoneNumbers = dto.PhoneNumbers.Select(p => new PhoneNumber
+        // Atualizar telefones - remover os existentes e adicionar os novos
+        foreach (var phone in employee.PhoneNumbers.ToList())
         {
-            Id = Guid.NewGuid(),
-            Number = p.Number,
-            Type = p.Type,
-            EmployeeId = employee.Id
-        }).ToList();
+            employee.PhoneNumbers.Remove(phone);
+        }
+        
+        foreach (var phoneDto in dto.PhoneNumbers)
+        {
+            employee.PhoneNumbers.Add(new PhoneNumber
+            {
+                Id = Guid.NewGuid(),
+                Number = phoneDto.Number,
+                Type = phoneDto.Type,
+                EmployeeId = employee.Id
+            });
+        }
 
         await _employeeRepository.UpdateAsync(employee);
 
