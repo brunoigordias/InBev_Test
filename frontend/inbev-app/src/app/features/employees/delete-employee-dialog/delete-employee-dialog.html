@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>
+  <mat-icon class="warning-icon">warning</mat-icon>
+  Confirmar Exclusão
+</h2>
+
+<mat-dialog-content>
+  <div class="dialog-message">
+    <p>Deseja realmente excluir o funcionário:</p>
+    <p class="employee-name">
+      <mat-icon>person</mat-icon>
+      <strong>{{ data.firstName }} {{ data.lastName }}</strong>
+    </p>
+    <p class="warning-text">
+      <mat-icon>info</mat-icon>
+      Esta ação não pode ser desfeita.
+    </p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    <mat-icon>close</mat-icon>
+    Cancelar
+  </button>
+  <button mat-raised-button color="warn" (click)="onConfirm()">
+    <mat-icon>delete</mat-icon>
+    Excluir
+  </button>
+</mat-dialog-actions>

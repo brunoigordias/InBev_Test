@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
@@ -19,6 +20,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Employee, EmployeeRole, EmployeeRoleLabels } from '../../../models';
 import { CpfPipe } from '../../../shared/pipes/cpf-pipe';
 import { PagedResponse } from '../../../models/paged-response.model';
+import { DeleteEmployeeDialog } from '../delete-employee-dialog/delete-employee-dialog';
 
 @Component({
   selector: 'app-employee-list',
@@ -45,6 +47,7 @@ export class EmployeeList implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
   private searchSubject = new Subject<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -52,6 +55,7 @@ export class EmployeeList implements OnInit {
   employees = signal<Employee[]>([]);
   isLoading = signal(true);
   isManager = signal(false);
+  currentUserId = signal<string | null>(null);
   displayedColumns: string[] = ['firstName', 'email', 'role', 'birthDate', 'actions'];
   
   // Paginação
@@ -64,9 +68,10 @@ export class EmployeeList implements OnInit {
   searchTerm = '';
 
   ngOnInit(): void {
-    // Verificar se o usuário logado é gerente
+    // Verificar se o usuário logado é gerente e obter seu ID
     const currentUser = this.authService.getCurrentUser();
     this.isManager.set(currentUser?.role === EmployeeRole.Manager);
+    this.currentUserId.set(currentUser?.id || null);
     
     this.loadEmployees();
     
@@ -137,24 +142,31 @@ export class EmployeeList implements OnInit {
   }
 
   deleteEmployee(employee: Employee): void {
-    if (confirm(`Deseja realmente excluir ${employee.firstName} ${employee.lastName}?`)) {
-      this.employeeService.delete(employee.id).subscribe({
-        next: () => {
-          this.snackBar.open('Funcionário excluído com sucesso!', 'Fechar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.loadEmployees();
-        },
-        error: (error) => {
-          this.snackBar.open(
-            error.message || 'Erro ao excluir funcionário',
-            'Fechar',
-            { duration: 5000, panelClass: ['error-snackbar'] }
-          );
-        }
-      });
-    }
+    const dialogRef = this.dialog.open(DeleteEmployeeDialog, {
+      width: '500px',
+      data: employee
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.employeeService.delete(employee.id).subscribe({
+          next: () => {
+            this.snackBar.open('Funcionário excluído com sucesso!', 'Fechar', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+            this.loadEmployees();
+          },
+          error: (error) => {
+            this.snackBar.open(
+              error.message || 'Erro ao excluir funcionário',
+              'Fechar',
+              { duration: 5000, panelClass: ['error-snackbar'] }
+            );
+          }
+        });
+      }
+    });
   }
 
   createNew(): void {

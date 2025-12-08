@@ -300,6 +300,17 @@ public class EmployeesController : ControllerBase
             return NotFound(new { message = "Funcionário não encontrado" });
         }
 
+        // Obter o ID do usuário atual
+        var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (currentUserId != null && Guid.TryParse(currentUserId, out var userId))
+        {            
+            if (userId == id)
+            {
+                _logger.LogWarning("Tentativa de auto-exclusão pelo usuário: {UserId}", userId);
+                return BadRequest(new { message = "Você não pode excluir sua própria conta" });
+            }
+        }
+
         await _employeeRepository.DeleteAsync(id);
 
         _logger.LogInformation("Funcionário removido com sucesso: {EmployeeId}", id);
