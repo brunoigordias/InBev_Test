@@ -42,6 +42,10 @@ export const routes: Routes = [
       {
         path: 'employees/:id/edit',
         loadComponent: () => import('./features/employees/employee-form/employee-form').then(m => m.EmployeeForm)
+      },
+      {
+        path: 'change-password',
+        loadComponent: () => import('./features/change-password/change-password').then(m => m.ChangePassword)
       }
     ]
   },

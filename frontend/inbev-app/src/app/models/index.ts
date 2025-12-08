@@ -5,4 +5,5 @@ export * from './phone-number.model';
 export * from './employee.model';
 export * from './auth.model';
 export * from './api-response.model';
+export * from './change-password.model';
 

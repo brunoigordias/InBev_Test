@@ -64,3 +64,9 @@ public class LoginResponseDto
     public EmployeeDto Employee { get; set; } = null!;
 }
 
+public class ChangePasswordDto
+{
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+}
+

@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using InBev.Application.DTOs;
 using InBev.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InBev.API.Controllers;
@@ -76,6 +78,56 @@ public class AuthController : ControllerBase
 
         _logger.LogInformation("Login bem-sucedido para: {Email}", loginDto.Email);
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Altera a senha do usuário autenticado
+    /// </summary>
+    [HttpPost("change-password")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        // Obter o ID do usuário atual do token JWT
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            _logger.LogWarning("Tentativa de alteração de senha sem usuário autenticado");
+            return Unauthorized(new { message = "Usuário não autenticado" });
+        }
+
+        _logger.LogInformation("Tentativa de alteração de senha para o usuário: {UserId}", userId);
+
+        // Buscar o funcionário no banco
+        var employee = await _employeeRepository.GetByIdAsync(userId);
+        if (employee == null)
+        {
+            _logger.LogWarning("Funcionário não encontrado: {UserId}", userId);
+            return Unauthorized(new { message = "Usuário não encontrado" });
+        }
+
+        // Verificar se a senha atual está correta
+        if (!_passwordHasher.VerifyPassword(dto.CurrentPassword, employee.PasswordHash))
+        {
+            _logger.LogWarning("Senha atual incorreta para o usuário: {UserId}", userId);
+            return BadRequest(new { message = "Senha atual incorreta" });
+        }
+
+        // Verificar se a nova senha é diferente da atual
+        if (dto.CurrentPassword == dto.NewPassword)
+        {
+            _logger.LogWarning("Nova senha igual à senha atual para o usuário: {UserId}", userId);
+            return BadRequest(new { message = "A nova senha deve ser diferente da senha atual" });
+        }
+
+        // Gerar hash da nova senha e atualizar no banco
+        var newPasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+        await _employeeRepository.UpdatePasswordAsync(userId, newPasswordHash);
+
+        _logger.LogInformation("Senha alterada com sucesso para o usuário: {UserId}", userId);
+        return Ok(new { message = "Senha alterada com sucesso" });
     }
 }
 
