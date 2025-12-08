@@ -158,6 +158,53 @@ public class CreateEmployeeValidatorTests
         result.Errors.Should().BeEmpty();
     }
 
+    [Fact]
+    public void Should_Have_Error_When_Manager_Has_ManagerId()
+    {
+        // Arrange
+        var dto = CreateValidEmployeeDto();
+        dto.Role = EmployeeRole.Manager;
+        dto.ManagerId = Guid.NewGuid(); // Manager não pode ter gerente
+
+        // Act
+        var result = _validator.Validate(dto);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "ManagerId" && e.ErrorMessage == "Gerentes não podem ter gerente");
+    }
+
+    [Fact]
+    public void Should_Have_Error_When_Employee_Has_No_ManagerId()
+    {
+        // Arrange
+        var dto = CreateValidEmployeeDto();
+        dto.Role = EmployeeRole.Employee;
+        dto.ManagerId = null; // Employee deve ter gerente
+
+        // Act
+        var result = _validator.Validate(dto);
+
+        // Assert
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.PropertyName == "ManagerId" && e.ErrorMessage == "Funcionários devem ter um gerente");
+    }
+
+    [Fact]
+    public void Should_Pass_Validation_When_Manager_Has_No_ManagerId()
+    {
+        // Arrange
+        var dto = CreateValidEmployeeDto();
+        dto.Role = EmployeeRole.Manager;
+        dto.ManagerId = null; // Manager não tem gerente
+
+        // Act
+        var result = _validator.Validate(dto);
+
+        // Assert
+        result.IsValid.Should().BeTrue();
+    }
+
     private CreateEmployeeDto CreateValidEmployeeDto()
     {
         return new CreateEmployeeDto
@@ -169,6 +216,7 @@ public class CreateEmployeeValidatorTests
             Password = "Password123",
             BirthDate = DateTime.Today.AddYears(-25),
             Role = EmployeeRole.Employee,
+            ManagerId = Guid.NewGuid(), // Employee precisa ter gerente
             PhoneNumbers = new List<CreatePhoneNumberDto>
             {
                 new() { Number = "(11) 98765-4321", Type = PhoneType.Mobile }

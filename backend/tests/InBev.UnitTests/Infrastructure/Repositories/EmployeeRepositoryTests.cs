@@ -489,13 +489,16 @@ public class EmployeeRepositoryTests : IDisposable
 
     private Employee CreateTestEmployee()
     {
+        var random = new Random();
+        var docNumber = random.Next(10000000, 99999999).ToString() + "000"; // CPF de 11 dígitos sem "123"
+        
         return new Employee
         {
             Id = Guid.NewGuid(),
             FirstName = "João",
             LastName = "Silva",
             Email = $"joao.{Guid.NewGuid()}@example.com",
-            DocNumber = Guid.NewGuid().ToString().Substring(0, 11),
+            DocNumber = docNumber,
             PasswordHash = "hashedpassword",
             BirthDate = DateTime.Today.AddYears(-25),
             Role = EmployeeRole.Employee,
