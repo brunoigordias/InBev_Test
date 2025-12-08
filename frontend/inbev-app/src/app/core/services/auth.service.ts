@@ -148,5 +148,12 @@ export class AuthService {
     const user = this.getCurrentUser();
     return user ? user.role.toString() === role : false;
   }
+
+  /**
+   * Altera a senha do usuário autenticado
+   */
+  changePassword(data: { currentPassword: string; newPassword: string }): Observable<any> {
+    return this.apiService.post('auth/change-password', data);
+  }
 }
 
