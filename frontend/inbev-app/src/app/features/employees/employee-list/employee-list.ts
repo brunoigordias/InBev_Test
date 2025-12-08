@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { debounceTime, Subject } from 'rxjs';
 
 import { EmployeeService } from '../../../core/services/employee.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Employee, EmployeeRole, EmployeeRoleLabels } from '../../../models';
 import { CpfPipe } from '../../../shared/pipes/cpf-pipe';
 import { PagedResponse } from '../../../models/paged-response.model';
@@ -41,6 +42,7 @@ import { PagedResponse } from '../../../models/paged-response.model';
 })
 export class EmployeeList implements OnInit {
   private readonly employeeService = inject(EmployeeService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly snackBar = inject(MatSnackBar);
   private searchSubject = new Subject<string>();
@@ -49,6 +51,7 @@ export class EmployeeList implements OnInit {
 
   employees = signal<Employee[]>([]);
   isLoading = signal(true);
+  isManager = signal(false);
   displayedColumns: string[] = ['firstName', 'email', 'role', 'birthDate', 'actions'];
   
   // Paginação
@@ -61,6 +64,10 @@ export class EmployeeList implements OnInit {
   searchTerm = '';
 
   ngOnInit(): void {
+    // Verificar se o usuário logado é gerente
+    const currentUser = this.authService.getCurrentUser();
+    this.isManager.set(currentUser?.role === EmployeeRole.Manager);
+    
     this.loadEmployees();
     
     // Configurar debounce para busca
@@ -118,14 +125,7 @@ export class EmployeeList implements OnInit {
   }
 
   getRoleColor(role: EmployeeRole): string {
-    switch (role) {
-      case EmployeeRole.Director:
-        return 'warn';
-      case EmployeeRole.Leader:
-        return 'accent';
-      default:
-        return 'primary';
-    }
+    return role === EmployeeRole.Manager ? 'warn' : 'primary';
   }
 
   viewEmployee(id: string): void {
