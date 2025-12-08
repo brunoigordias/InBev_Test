@@ -1,0 +1,129 @@
+<div class="employee-view-container">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Carregando funcionário...</p>
+    </div>
+  } @else if (employee()) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>person</mat-icon>
+          {{ employee()!.firstName }} {{ employee()!.lastName }}
+        </mat-card-title>
+        <div class="header-actions">
+          @if (isManager()) {
+            <button mat-raised-button color="accent" (click)="editEmployee()">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          }
+          <button mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Voltar
+          </button>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Dados Pessoais -->
+        <div class="info-section">
+          <h3>
+            <mat-icon>badge</mat-icon>
+            Dados Pessoais
+          </h3>
+          <mat-divider></mat-divider>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Nome Completo</label>
+              <p>{{ employee()!.firstName }} {{ employee()!.lastName }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>CPF</label>
+              <p>{{ employee()!.docNumber | cpf }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>Data de Nascimento</label>
+              <p>{{ employee()!.birthDate | date: 'dd/MM/yyyy' }} ({{ getAge(employee()!.birthDate) }} anos)</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados Profissionais -->
+        <div class="info-section">
+          <h3>
+            <mat-icon>work</mat-icon>
+            Dados Profissionais
+          </h3>
+          <mat-divider></mat-divider>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>E-mail</label>
+              <p>{{ employee()!.email }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>Cargo</label>
+              <mat-chip [color]="getRoleColor(employee()!.role)">
+                {{ getRoleLabel(employee()!.role) }}
+              </mat-chip>
+            </div>
+
+            @if (employee()!.manager) {
+              <div class="info-item">
+                <label>Gerente</label>
+                <p>
+                  <mat-icon class="inline-icon">supervisor_account</mat-icon>
+                  {{ employee()!.manager!.firstName }} {{ employee()!.manager!.lastName }}
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Telefones -->
+        <div class="info-section">
+          <h3>
+            <mat-icon>phone</mat-icon>
+            Telefones
+          </h3>
+          <mat-divider></mat-divider>
+          
+          @if (employee()!.phoneNumbers && employee()!.phoneNumbers.length > 0) {
+            <mat-list>
+              @for (phone of employee()!.phoneNumbers; track phone.id) {
+                <mat-list-item>
+                  <mat-icon matListItemIcon>{{ phone.type === 1 ? 'phone_iphone' : phone.type === 2 ? 'phone' : 'business' }}</mat-icon>
+                  <div matListItemTitle>{{ phone.number }}</div>
+                  <div matListItemLine>{{ phoneTypeLabels[phone.type] }}</div>
+                </mat-list-item>
+              }
+            </mat-list>
+          } @else {
+            <p class="no-data">Nenhum telefone cadastrado</p>
+          }
+        </div>
+
+        <!-- Informações de Sistema -->
+        <div class="info-section system-info">
+          <h3>
+            <mat-icon>info</mat-icon>
+            Informações do Sistema
+          </h3>
+          <mat-divider></mat-divider>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>ID do Funcionário</label>
+              <p class="mono">{{ employee()!.id }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

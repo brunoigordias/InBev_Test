@@ -1,0 +1,175 @@
+.employee-view-container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+
+  mat-card {
+    mat-card-header {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.75rem;
+        font-weight: 500;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 0.5rem;
+
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 1.5rem;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+
+    p {
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 1.1rem;
+    }
+  }
+
+  .info-section {
+    margin-bottom: 2rem;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+      color: rgba(0, 0, 0, 0.87);
+
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+
+    mat-divider {
+      margin-bottom: 1.5rem;
+    }
+
+    &.system-info {
+      h3 mat-icon {
+        color: rgba(0, 0, 0, 0.54);
+      }
+    }
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .info-item {
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.6);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      font-size: 1rem;
+      color: rgba(0, 0, 0, 0.87);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      &.mono {
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .inline-icon {
+        font-size: 1.25rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        color: #1976d2;
+      }
+    }
+
+    mat-chip {
+      font-weight: 500;
+    }
+  }
+
+  mat-list {
+    padding: 0;
+
+    mat-list-item {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+  }
+
+  .no-data {
+    color: rgba(0, 0, 0, 0.6);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .employee-view-container {
+    margin: 1rem;
+    padding: 0.5rem;
+
+    mat-card {
+      mat-card-header {
+        flex-direction: column;
+        align-items: stretch;
+
+        .header-actions {
+          margin-top: 1rem;
+          flex-direction: column;
+
+          button {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
