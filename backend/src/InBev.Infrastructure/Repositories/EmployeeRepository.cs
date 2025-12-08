@@ -100,7 +100,33 @@ public class EmployeeRepository : IEmployeeRepository
     public async Task UpdateAsync(Employee employee)
     {
         employee.UpdatedAt = DateTime.UtcNow;
-        _context.Employees.Update(employee);
+        
+        // Buscar telefones existentes sem tracking para evitar conflito
+        var existingPhones = await _context.PhoneNumbers
+            .AsNoTracking()
+            .Where(p => p.EmployeeId == employee.Id)
+            .ToListAsync();
+        
+        // Remover telefones antigos se existirem
+        if (existingPhones.Any())
+        {
+            // Precisamos anexar as entidades para deletá-las
+            foreach (var phone in existingPhones)
+            {
+                _context.PhoneNumbers.Attach(phone);
+                _context.PhoneNumbers.Remove(phone);
+            }
+        }
+        
+        // Marcar o employee como modificado
+        _context.Entry(employee).State = EntityState.Modified;
+        
+        // Marcar os novos telefones como adicionados
+        foreach (var phone in employee.PhoneNumbers)
+        {
+            _context.Entry(phone).State = EntityState.Added;
+        }
+        
         await _context.SaveChangesAsync();
     }
 
